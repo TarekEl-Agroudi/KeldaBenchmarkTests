@@ -99,7 +99,7 @@ switch TestWellMenu
         OP.p_c0  = 3.4475;
         OP.z_c0  = [0.3232; 0.2194];
         OP.t_ramp = 30;
-        OP.friction = 10.3425;
+        OP.friction = 45;% 10.3425;
     case 2
         OP.q_p0  = 50.4722;
         OP.q_bl_nom = 25.2361;
@@ -107,7 +107,7 @@ switch TestWellMenu
         OP.p_c0  = 6.8950;
         OP.z_c0  = [0.3674; 0.2194];
         OP.t_ramp = 60;
-        OP.friction = 10.3425;
+        OP.friction = 50;%10.3425;
     case 3
         OP.q_p0  = 50.4722;
         OP.q_bl_nom = 25.2361;
@@ -115,7 +115,7 @@ switch TestWellMenu
         OP.p_c0  = 6.8950;
         OP.z_c0  = [0.3674; 0.2194];
         OP.t_ramp = 60;
-        OP.friction = 10.3425;
+        OP.friction = 60;%10.3425;
 end
 
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -180,7 +180,7 @@ end
 save(fullfile(reportFolder, 'Results.mat'), 'Results');
 
 if GenerateReportFlag
-    generateBenchmarkReport(Results, scenarioNames, wellNames{TestWellMenu}, SelectedControllerName, reportFolder, theme);
+    generateBenchmarkReport(Results, scenarioNames, OP, wellNames{TestWellMenu}, SelectedControllerName, reportFolder, theme);
     reportPDF = fullfile(reportFolder, sprintf('BenchmarkReport_%s_%s.pdf', wellNames{TestWellMenu}, SelectedControllerName));
     if ispc
         winopen(reportPDF);

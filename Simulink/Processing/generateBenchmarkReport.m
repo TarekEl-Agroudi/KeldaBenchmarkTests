@@ -1,5 +1,5 @@
 
-function generateBenchmarkReport(Results, scenarioNames, selectedWell, selectedCtrl, reportFolder, theme)
+function generateBenchmarkReport(Results, scenarioNames, OP, selectedWell, selectedCtrl, reportFolder, theme)
      % --- Define themes ---
     themes.dark.fig_bg     = [0.1 0.1 0.1];
     themes.dark.axes_bg    = [0.15 0.15 0.15];
@@ -20,6 +20,8 @@ function generateBenchmarkReport(Results, scenarioNames, selectedWell, selectedC
     else
         th = themes.light;
     end
+
+    set(0,'DefaultFigureWindowStyle','normal');
 
     linew_main = 1.5;
     linew_secondary = 0.8;
@@ -82,6 +84,24 @@ function generateBenchmarkReport(Results, scenarioNames, selectedWell, selectedC
         bottom_margin = 0.08; top_margin = 0.82;
         plot_spacing = 0.02; nPlots = 4;
         plot_height = (top_margin - bottom_margin - (nPlots-1)*plot_spacing)/nPlots;
+        switch scenarioNum
+            case {1}
+                p_c_min = 0;
+                p_c_max = 3*OP.p_c0;
+                q_max = 1.5*(OP.q_p0 + OP.q_bl_nom);
+            case 2
+                p_c_min = 0.8*OP.p_c0;
+                p_c_max = 1.2*OP.p_c0;
+                q_max = 1.5*(OP.q_p0 + OP.q_bl_nom);
+            case {3, 6}
+                p_c_min = 0.5*OP.p_c0;
+                p_c_max = 1.5*OP.p_c0;
+                q_max = 1.5*(OP.q_p0 + OP.q_bl_nom);
+            case {4, 5, 7}
+                p_c_min = 0;
+                p_c_max = 70;
+                q_max = 1.5*(OP.q_p0 + OP.q_bl_nom);
+        end
 
         % Pressure
         ax1 = axes('Position',[left_margin, bottom_margin + 3*(plot_height+plot_spacing), right_margin-left_margin, plot_height], ...
@@ -90,7 +110,7 @@ function generateBenchmarkReport(Results, scenarioNames, selectedWell, selectedC
         plotTimeseries(ax1, simOut.tout(), simOut.p_c.Data(:), linew_main, '-', th.lineColors(1,:));
         plotTimeseries(ax1, simOut.tout, simOut.p_c_r.Data(:), linew_secondary, '--', th.lineColors(2,:));
         ylabel(ax1,'p_c [bar]'); legend(ax1,{'p_c','p_c_r'}, 'TextColor', th.text_col, 'Color', th.legend_bg); set(ax1,'FontSize',9);
-        ylim(ax1, [0 20]);
+        ylim(ax1, [p_c_min p_c_max]);
 
         % Flow
         ax2 = axes('Position',[left_margin, bottom_margin + 2*(plot_height+plot_spacing), right_margin-left_margin, plot_height], ...
@@ -100,7 +120,7 @@ function generateBenchmarkReport(Results, scenarioNames, selectedWell, selectedC
         plotTimeseries(ax2, simOut.tout, simOut.q_bl.Data(:), linew_secondary, '-', th.lineColors(2,:));
         plotTimeseries(ax2, simOut.tout, simOut.q_c.Data(:), linew_secondary, '-', th.lineColors(3,:));
         ylabel(ax2,'Flow [lps]'); legend(ax2,{'q_p','q_{bl}','q_{c}'}, 'TextColor', th.text_col, 'Color', th.legend_bg); set(ax2,'FontSize',9);
-        ylim(ax2, [0 80]);
+        ylim(ax2, [0 q_max]);
 
         % Actuator Pos
         ax3 = axes('Position',[left_margin, bottom_margin + 1*(plot_height+plot_spacing), right_margin-left_margin, plot_height], ...
