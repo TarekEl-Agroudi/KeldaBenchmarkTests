@@ -99,7 +99,7 @@ switch TestWellMenu
         OP.p_c0  = 3.4475;
         OP.z_c0  = [0.3232; 0.2194];
         OP.t_ramp = 30;
-        OP.friction = 45;
+        OP.p_fric = 45;
     case 2
         OP.q_p0  = 50.4722;
         OP.q_bl_nom = 25.2361;
@@ -107,7 +107,7 @@ switch TestWellMenu
         OP.p_c0  = 6.8950;
         OP.z_c0  = [0.3674; 0.2194];
         OP.t_ramp = 60;
-        OP.friction = 50;
+        OP.p_fric = 50;
     case 3
         OP.q_p0  = 50.4722;
         OP.q_bl_nom = 25.2361;
@@ -115,7 +115,7 @@ switch TestWellMenu
         OP.p_c0  = 6.8950;
         OP.z_c0  = [0.3674; 0.2194];
         OP.t_ramp = 60;
-        OP.friction = 60;
+        OP.p_fric = 60;
 end
 
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -255,7 +255,7 @@ function [U, tEnd] = setupScenario(ScenarioMenu, dtSim, OP)
     
         case 4 % Connection
             t_ramp = OP.t_ramp;
-            friction = OP.friction;
+            p_fric = OP.p_fric;
 
             q_bl_times = [0, waitTime/2];
             q_bl_vals = [OP.q_bl_nom, OP.q_bl_con];
@@ -266,7 +266,7 @@ function [U, tEnd] = setupScenario(ScenarioMenu, dtSim, OP)
             q_p_vals = [OP.q_p0, OP.q_p0, OP.q_p0, 0, 0, OP.q_p0/10, OP.q_p0/10, OP.q_p0, OP.q_p0];
             
             p_c_times = q_p_times;
-            p_c_vals = OP.p_c0 + [0, 0, 0, friction, friction, friction, friction, 0, 0];
+            p_c_vals = OP.p_c0 + [0, 0, 0, p_fric, p_fric, p_fric, p_fric, 0, 0];
 
             U.q_p = timeseries(q_p_vals, q_p_times);
             U.q_bl = timeseries(q_bl_vals, q_bl_times);
@@ -276,7 +276,7 @@ function [U, tEnd] = setupScenario(ScenarioMenu, dtSim, OP)
 
         case 5 % Pressure Trapping
             t_ramp = OP.t_ramp;
-            friction = OP.friction;
+            p_fric = OP.p_fric;
 
             q_bl_times = [0, waitTime, waitTime + 15];
             q_bl_vals = [OP.q_bl_nom, OP.q_bl_nom, 0];
@@ -285,7 +285,7 @@ function [U, tEnd] = setupScenario(ScenarioMenu, dtSim, OP)
             q_p_vals = [OP.q_p0, OP.q_p0, 0, 0,  OP.q_p0, OP.q_p0];
             
             p_c_times = q_p_times;
-            p_c_vals = OP.p_c0 + [0, 0, friction, friction, 0, 0];
+            p_c_vals = OP.p_c0 + [0, 0, p_fric, p_fric, 0, 0];
 
             U.q_p = timeseries(q_p_vals, q_p_times);
             U.q_bl = timeseries(q_bl_vals, q_bl_times);
@@ -313,7 +313,7 @@ function [U, tEnd] = setupScenario(ScenarioMenu, dtSim, OP)
 
         case 7 %Pressure Reference Chirp Connection OP
             t_ramp = OP.t_ramp;
-            friction = OP.friction;
+            p_fric = OP.p_fric;
 
             q_bl_times = [0, waitTime/2];
             q_bl_vals = [OP.q_bl_nom, OP.q_bl_con];
@@ -322,8 +322,8 @@ function [U, tEnd] = setupScenario(ScenarioMenu, dtSim, OP)
             q_p_vals = [OP.q_p0, OP.q_p0, 0, 0];
             
             p_c_times = q_p_times;
-            p_c_vals = OP.p_c0 + [0, 0, friction, friction];
-            chirp = linearChirp(dtSim, OP.p_c0+friction, 0.1, 500, 1000);
+            p_c_vals = OP.p_c0 + [0, 0, p_fric, p_fric];
+            chirp = linearChirp(dtSim, OP.p_c0+p_fric, 0.1, 500, 1000);
             p_c_vals = [p_c_vals(:); chirp.Data(:)];
             p_c_times = [p_c_times(:); p_c_times(end) + chirp.Time];
             

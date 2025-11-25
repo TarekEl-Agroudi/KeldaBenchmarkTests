@@ -38,7 +38,7 @@ function generateBenchmarkReport(Results, scenarioNames, OP, selectedWell, selec
 
     % --- Export KPIs first page ---
     reportPDF = fullfile(reportFolder, sprintf('BenchmarkReport_%s_%s.pdf', selectedWell, selectedCtrl));
-    exportKPIsAsFirstPage(Results, Results, kpi_map, scenarioNames, selectedWell, selectedCtrl, reportPDF, th)
+    exportKPIsAsFirstPage(Results, [], kpi_map, scenarioNames, selectedWell, selectedCtrl, reportPDF, th)
 
     % --- Loop through scenarios ---
     for i = 1:numel(Results)
@@ -99,11 +99,11 @@ function generateBenchmarkReport(Results, scenarioNames, OP, selectedWell, selec
                 q_max = 1.5*(OP.q_p0 + OP.q_bl_nom);
             case {4, 5}
                 p_c_min = 0;
-                p_c_max = OP.p_c0 + OP.friction + 10;
+                p_c_max = OP.p_c0 + OP.p_fric + 10;
                 q_max = 1.5*(OP.q_p0 + OP.q_bl_nom);
             case 7
-                p_c_min = OP.p_c0 + OP.friction - 2;
-                p_c_max = OP.p_c0 + OP.friction + 2;
+                p_c_min = OP.p_c0 + OP.p_fric - 2;
+                p_c_max = OP.p_c0 + OP.p_fric + 2;
                 q_max = 1.5*(OP.q_p0 + OP.q_bl_nom);
         end
 

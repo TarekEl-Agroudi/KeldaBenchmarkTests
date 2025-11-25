@@ -4,6 +4,12 @@ function exportKPIsAsFirstPage(Results, baseline, kpi_map, scenarioNames, select
     ax  = axes('Parent',fig,'Position',[0 0 1 1],'Visible','off');
     ax.XLim = [0 1]; ax.YLim = [0 1];
 
+    if isempty(baseline)
+        baseFileName = sprintf('ResultsBaselineBM02.mat');
+        tmp = load(baseFileName);
+        baseline = tmp.Results; 
+    end
+
     y = 0.95; lineSpacing = 0.02; blockSpacing = 0.04;
 
     text(0.05, y, 'Key Performance Indicators','FontWeight','bold','FontSize',16,'Color',th.text_col,'Parent',ax,'Units','normalized');
@@ -14,7 +20,16 @@ function exportKPIsAsFirstPage(Results, baseline, kpi_map, scenarioNames, select
     text(0.05, y, sprintf('Test well : %s', strrep(selectedWell, '_', '\_')),'FontSize',11,'Color',th.text_col,'Parent',ax,'Units','normalized'); y = y - blockSpacing;
 
     for k = 1:numel(Results)
-        scenarioName = scenarioNames{Results(k).Scenario};
+        scenIdx = Results(k).Scenario;
+        scenarioName = scenarioNames{scenIdx};
+
+        currentBaseKPI = [];
+        if ~isempty(baseline)
+            baseIdx = find([baseline.Scenario] == scenIdx, 1);
+            if ~isempty(baseIdx)
+                currentBaseKPI = baseline(baseIdx).KPI;
+            end
+        end
     
         % --- Collect only numeric scalar KPIs ---
         KPIFields = fieldnames(Results(k).KPI);
@@ -49,13 +64,26 @@ function exportKPIsAsFirstPage(Results, baseline, kpi_map, scenarioNames, select
     
         % --- Baseline KPIs ---
         baselineLine = sprintf('%-11s','Baseline:');
-        for f = 1:numel(KPIData)
-            if isKey(kpi_map, KPIFieldsScalar{f})
-                kDisp = kpi_map(KPIFieldsScalar{f});
-            else
-                kDisp = KPIFieldsScalar{f};
+        if isempty(currentBaseKPI)
+            baselineLine = [baselineLine ' (Not Available)'];
+        else
+            for f = 1:numel(KPIData)
+                fieldName = KPIFieldsScalar{f};
+                if strcmp(fieldName, 'xRT')
+                    continue; 
+                end
+                if isKey(kpi_map, fieldName)
+                    kDisp = kpi_map(fieldName);
+                else
+                    kDisp = fieldName;
+                end
+                if isfield(currentBaseKPI, fieldName)
+                    bVal = currentBaseKPI.(fieldName);
+                    baselineLine = [baselineLine sprintf(' %s: %.4g |', kDisp, bVal)]; %#ok<AGROW>
+                else
+                    baselineLine = [baselineLine sprintf(' %s: - |', kDisp)]; %#ok<AGROW>
+                end
             end
-            baselineLine = [baselineLine sprintf(' %s: %.4g |', kDisp, KPIData(f))];
         end
         text(0.05, y, baselineLine,'FontSize',10,'Color',th.lineColors(2,:),'Parent',ax,'Units','normalized');
         y = y - blockSpacing;
