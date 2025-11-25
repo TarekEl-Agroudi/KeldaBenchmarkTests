@@ -99,7 +99,7 @@ switch TestWellMenu
         OP.p_c0  = 3.4475;
         OP.z_c0  = [0.3232; 0.2194];
         OP.t_ramp = 30;
-        OP.friction = 45;% 10.3425;
+        OP.friction = 45;
     case 2
         OP.q_p0  = 50.4722;
         OP.q_bl_nom = 25.2361;
@@ -107,7 +107,7 @@ switch TestWellMenu
         OP.p_c0  = 6.8950;
         OP.z_c0  = [0.3674; 0.2194];
         OP.t_ramp = 60;
-        OP.friction = 50;%10.3425;
+        OP.friction = 50;
     case 3
         OP.q_p0  = 50.4722;
         OP.q_bl_nom = 25.2361;
@@ -115,7 +115,7 @@ switch TestWellMenu
         OP.p_c0  = 6.8950;
         OP.z_c0  = [0.3674; 0.2194];
         OP.t_ramp = 60;
-        OP.friction = 60;%10.3425;
+        OP.friction = 60;
 end
 
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -278,10 +278,10 @@ function [U, tEnd] = setupScenario(ScenarioMenu, dtSim, OP)
             t_ramp = OP.t_ramp;
             friction = OP.friction;
 
-            q_bl_times = [0, waitTime, waitTime + 10];
+            q_bl_times = [0, waitTime, waitTime + 15];
             q_bl_vals = [OP.q_bl_nom, OP.q_bl_nom, 0];
 
-            q_p_times = waitTime + [-waitTime, 0, 10, 4*t_ramp, 5*t_ramp, 6*t_ramp];
+            q_p_times = waitTime + [-waitTime, 0, 15, 4*t_ramp, 5*t_ramp, 6*t_ramp];
             q_p_vals = [OP.q_p0, OP.q_p0, 0, 0,  OP.q_p0, OP.q_p0];
             
             p_c_times = q_p_times;
@@ -298,7 +298,7 @@ function [U, tEnd] = setupScenario(ScenarioMenu, dtSim, OP)
             q_wait = OP.q_p0*ones(size(times_wait));
             qb_wait = OP.q_bl_nom*ones(size(times_wait));
     
-            [p_c_r, t_sim] = linearChirp(dtSim, OP.p_c0, 0.5, 100, 1000);
+            [p_c_r, t_sim] = linearChirp(dtSim, OP.p_c0, 0.1, 100, 1000);
             t_sim = t_sim + waitTime;
     
             times = [times_wait, t_sim];
