@@ -105,7 +105,7 @@ switch TestWellMenu
         OP.q_bl_nom = 25.2361;
         OP.q_bl_con = 25.2361;
         OP.p_c0  = 6.8950;
-        OP.z_c0  = [0.3674; 0.2194];
+        OP.z_c0  = [0.3687; 0.2194];
         OP.t_ramp = 60;
         OP.p_fric = 50;
     case 3
@@ -113,7 +113,7 @@ switch TestWellMenu
         OP.q_bl_nom = 25.2361;
         OP.q_bl_con = 25.2361;
         OP.p_c0  = 6.8950;
-        OP.z_c0  = [0.3674; 0.2194];
+        OP.z_c0  = [0.3687; 0.2194];
         OP.t_ramp = 60;
         OP.p_fric = 60;
 end
