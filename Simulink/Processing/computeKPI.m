@@ -3,8 +3,8 @@ function KPI_results = computeKPI(simOut, scenario, OP)
     waitTime = 100;
     switch scenario
         case 1
-            stepDur  = 120;
-            mults = [2, 1, 0.5, 1.0];
+            stepDur  = 100;
+            mults = [1.5, 1, 3, 1, 5, 1];
             stepTimes  = waitTime + (0:numel(mults)-1) * stepDur;
             stepValues = mults * OP.p_c0;
             riseTimes = nan(1, numel(stepTimes));

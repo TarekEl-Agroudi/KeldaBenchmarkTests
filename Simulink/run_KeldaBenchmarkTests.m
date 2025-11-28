@@ -93,11 +93,11 @@ end
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 switch TestWellMenu
     case 1
-        OP.q_p0  = 31.5451; 
+        OP.q_p0  = 33.33; 
         OP.q_bl_nom = 0;
         OP.q_bl_con = 8.3333; 
-        OP.p_c0  = 3.4475;
-        OP.z_c0  = [0.3232; 0.2194];
+        OP.p_c0  = 2.5;
+        OP.z_c0  = [0.4356; 0];
         OP.t_ramp = 30;
         OP.p_fric = 45;
     case 2
@@ -105,7 +105,7 @@ switch TestWellMenu
         OP.q_bl_nom = 25.2361;
         OP.q_bl_con = 25.2361;
         OP.p_c0  = 6.8950;
-        OP.z_c0  = [0.3687; 0.2194];
+        OP.z_c0  = [0.5871; 0];
         OP.t_ramp = 60;
         OP.p_fric = 50;
     case 3
@@ -113,7 +113,7 @@ switch TestWellMenu
         OP.q_bl_nom = 25.2361;
         OP.q_bl_con = 25.2361;
         OP.p_c0  = 6.8950;
-        OP.z_c0  = [0.3687; 0.2194];
+        OP.z_c0  = [0.5871; 0];
         OP.t_ramp = 60;
         OP.p_fric = 60;
 end
@@ -199,8 +199,8 @@ function [U, tEnd] = setupScenario(ScenarioMenu, dtSim, OP)
     waitTime = 100;
     switch ScenarioMenu
         case 1 % Pressure Steps
-            stepDur = 120;
-            mults = [2, 1, 0.5, 1.0];
+            stepDur = 100;
+            mults = [1.5, 1, 3, 1, 5, 1];
             times = waitTime;
             values = OP.p_c0;
             for k = 1:numel(mults)

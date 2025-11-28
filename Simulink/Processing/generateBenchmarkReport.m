@@ -87,15 +87,15 @@ function generateBenchmarkReport(Results, scenarioNames, OP, selectedWell, selec
         switch scenarioNum
             case {1}
                 p_c_min = 0;
-                p_c_max = 3*OP.p_c0;
-                q_max = 1.5*(OP.q_p0 + OP.q_bl_nom);
+                p_c_max = 6*OP.p_c0;
+                q_max = 2*(OP.q_p0 + OP.q_bl_nom);
             case {2,6}
                 p_c_min = 0.8*OP.p_c0;
                 p_c_max = 1.2*OP.p_c0;
                 q_max = 1.5*(OP.q_p0 + OP.q_bl_nom);
             case 3
-                p_c_min = 0.5*OP.p_c0;
-                p_c_max = 1.5*OP.p_c0;
+                p_c_min = 0.7*OP.p_c0;
+                p_c_max = 1.3*OP.p_c0;
                 q_max = 1.5*(OP.q_p0 + OP.q_bl_nom);
             case {4, 5}
                 p_c_min = 0;
