@@ -122,7 +122,7 @@ end
 % Simulation Model
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 dtSim = 0.01;
-HarnessModel = 'KeldaBenchmarkTests_Harness';
+HarnessModel = 'BenchmarkTestHarness';
 switch TestWellMenu
     case 1
         fmuPath = fullfile(scriptDir, 'fmu', 'BM01_Land.fmu');

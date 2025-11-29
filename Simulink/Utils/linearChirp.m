@@ -25,14 +25,12 @@ function [signal_ts, t_sim] = linearChirp(dt, initialValue, amp, t_settle, t_chi
 
     phase = 2 * pi * cumtrapz(t, f_t);
 
-    % Handle scalar or vector initialValue
     if isscalar(initialValue)
         signal = initialValue + amp * sin(phase);
         signal(t < t_settle) = initialValue;
     else
-        signal = repmat(initialValue(:)', length(t), 1); % preallocate
+        signal = repmat(initialValue(:)', length(t), 1);
         signal(:,1) = initialValue(1) + amp * sin(phase);
-        % other columns remain constant (like choke z2)
     end
 
     signal_ts = timeseries(signal, t);
