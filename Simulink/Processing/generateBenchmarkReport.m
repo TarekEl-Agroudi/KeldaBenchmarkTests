@@ -1,5 +1,7 @@
 
 function generateBenchmarkReport(Results, scenarioNames, OP, selectedWell, selectedCtrl, reportFolder, theme)
+    plotForArticle = 0;
+
      % --- Define themes ---
     themes.dark.fig_bg     = [0.1 0.1 0.1];
     themes.dark.axes_bg    = [0.15 0.15 0.15];
@@ -12,7 +14,11 @@ function generateBenchmarkReport(Results, scenarioNames, OP, selectedWell, selec
     themes.light.axes_bg    = [1 1 1];
     themes.light.axes_grid  = [0.8 0.8 0.8];
     themes.light.text_col   = [0 0 0];
-    themes.light.legend_bg  = [0.9 0.9 0.9];
+    if ~plotForArticle
+        themes.light.legend_bg  = [0.9 0.9 0.9];
+    else
+        themes.light.legend_bg  = [1 1 1];
+    end
     themes.light.lineColors = [0 0.4470 0.7410;  0.9290 0.6940 0.1250; 0.8500 0.3250 0.0980; 0.4940 0.1840 0.5560];
 
     if strcmp(theme,'dark')
@@ -22,9 +28,14 @@ function generateBenchmarkReport(Results, scenarioNames, OP, selectedWell, selec
     end
 
     set(0,'DefaultFigureWindowStyle','normal');
-
-    linew_main = 1.5;
-    linew_secondary = 0.8;
+   
+    if ~plotForArticle
+        linew_main = 1.5;
+        linew_secondary = 0.8;
+    else
+        linew_main = 1;
+        linew_secondary = 1;
+    end
 
     % --- KPI mapping ---
     kpi_map = containers.Map( ...
@@ -63,22 +74,24 @@ function generateBenchmarkReport(Results, scenarioNames, OP, selectedWell, selec
         % --- Create figure ---
         fig = figure('Visible','on','Units','pixels','Position',[100 100 794 1123], ...
                      'Color', th.fig_bg, 'InvertHardcopy','off');
-
-        sgtitle(sprintf('Scenario %d: %s', scenarioNum, scenarioName), ...
-                'FontSize',14,'FontWeight','bold','Color', th.text_col);
-
-        % --- Annotations ---
-        annotation(fig,'textbox',[0.1 0.9 0.8 0.02], ...
-            'String',sprintf('Test Well: %s    |    Controller: %s', strrep(selectedWell, '_', '\_'), strrep(selectedCtrl, '_', '\_')), ...
-            'HorizontalAlignment','center','FontSize',10,'LineStyle','none', ...
-            'Color', th.text_col, 'BackgroundColor', th.legend_bg);
-
-        if ~isempty(kpiText)
-            annotation(fig,'textbox',[0.1 0.85 0.8 0.04], ...
-                'String',kpiText,'HorizontalAlignment','center','VerticalAlignment','middle', ...
-                'FontSize',10,'LineStyle','none','Color', th.text_col,'BackgroundColor', th.legend_bg);
+        
+        if ~plotForArticle
+            sgtitle(sprintf('Scenario %d: %s', scenarioNum, scenarioName), ...
+                    'FontSize',14,'FontWeight','bold','Color', th.text_col);
+    
+            % --- Annotations ---
+        
+            annotation(fig,'textbox',[0.1 0.9 0.8 0.02], ...
+                'String',sprintf('Test Well: %s    |    Controller: %s', strrep(selectedWell, '_', '\_'), strrep(selectedCtrl, '_', '\_')), ...
+                'HorizontalAlignment','center','FontSize',10,'LineStyle','none', ...
+                'Color', th.text_col, 'BackgroundColor', th.legend_bg);
+    
+            if ~isempty(kpiText)
+                annotation(fig,'textbox',[0.1 0.85 0.8 0.04], ...
+                    'String',kpiText,'HorizontalAlignment','center','VerticalAlignment','middle', ...
+                    'FontSize',10,'LineStyle','none','Color', th.text_col,'BackgroundColor', th.legend_bg);
+            end
         end
-
         % --- Plot layout ---
         left_margin = 0.1; right_margin = 0.9;
         bottom_margin = 0.08; top_margin = 0.82;
@@ -89,22 +102,27 @@ function generateBenchmarkReport(Results, scenarioNames, OP, selectedWell, selec
                 p_c_min = 0;
                 p_c_max = 6*OP.p_c0;
                 q_max = 2*(OP.q_p0 + OP.q_bl_nom);
+                q_min = -5;
             case {2,6}
                 p_c_min = 0.8*OP.p_c0;
                 p_c_max = 1.2*OP.p_c0;
                 q_max = 1.5*(OP.q_p0 + OP.q_bl_nom);
+                q_min = -5;
             case 3
                 p_c_min = 0.7*OP.p_c0;
                 p_c_max = 1.3*OP.p_c0;
                 q_max = 1.5*(OP.q_p0 + OP.q_bl_nom);
+                q_min = -5;
             case {4, 5}
                 p_c_min = 0;
                 p_c_max = OP.p_c0 + OP.p_fric + 10;
                 q_max = 1.5*(OP.q_p0 + OP.q_bl_nom);
+                q_min = -5;
             case 7
                 p_c_min = OP.p_c0 + OP.p_fric - 2;
                 p_c_max = OP.p_c0 + OP.p_fric + 2;
                 q_max = 1.5*(OP.q_p0 + OP.q_bl_nom);
+                q_min = -5;
         end
 
         % Pressure
@@ -118,7 +136,7 @@ function generateBenchmarkReport(Results, scenarioNames, OP, selectedWell, selec
             plotTimeseries(ax1, simOut.tout(), simOut.p_c.Data(:), linew_main, '-', th.lineColors(1,:));
             plotTimeseries(ax1, simOut.tout, simOut.p_c_r.Data(:), linew_secondary, '--', th.lineColors(2,:));
         end
-        ylabel(ax1,'p_c [bar]'); legend(ax1,{'p_c','p_c_r'}, 'TextColor', th.text_col, 'Color', th.legend_bg); set(ax1,'FontSize',9);
+        ylabel(ax1,'p_c [bar]'); legend(ax1,{'p_c','p_c^r'}, 'TextColor', th.text_col, 'Color', th.legend_bg); set(ax1,'FontSize',9);
         ylim(ax1, [p_c_min p_c_max]);
 
         % Flow
@@ -129,7 +147,7 @@ function generateBenchmarkReport(Results, scenarioNames, OP, selectedWell, selec
         plotTimeseries(ax2, simOut.tout, simOut.q_bl.Data(:), linew_secondary, '-', th.lineColors(2,:));
         plotTimeseries(ax2, simOut.tout, simOut.q_c.Data(:), linew_secondary, '-', th.lineColors(3,:));
         ylabel(ax2,'Flow [lps]'); legend(ax2,{'q_p','q_{bl}','q_{c}'}, 'TextColor', th.text_col, 'Color', th.legend_bg); set(ax2,'FontSize',9);
-        ylim(ax2, [0 q_max]);
+        ylim(ax2, [q_min q_max]);
 
         % Actuator Pos
         ax3 = axes('Position',[left_margin, bottom_margin + 1*(plot_height+plot_spacing), right_margin-left_margin, plot_height], ...
@@ -138,7 +156,7 @@ function generateBenchmarkReport(Results, scenarioNames, OP, selectedWell, selec
         plotTimeseries(ax3, simOut.tout, simOut.z_cA.Data(:), linew_main, '-', th.lineColors(1,:));
         plotTimeseries(ax3, simOut.tout, simOut.z_cB.Data(:), linew_main, '-', th.lineColors(2,:));
         ylabel(ax3,'z_c [%]');  legend(ax3,{'z_{cA}','z_{cB}'}, 'TextColor', th.text_col, 'Color', th.legend_bg); set(ax3,'FontSize',9);
-        ylim(ax3, [0 1]);
+        ylim(ax3, [-0.1 1.1]);
 
         % Actuator Vel
         ax4 = axes('Position',[left_margin, bottom_margin, right_margin-left_margin, plot_height], ...

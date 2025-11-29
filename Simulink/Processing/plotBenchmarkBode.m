@@ -18,9 +18,10 @@ function plotBenchmarkBode(KPI, th, reportFolder, reportPDF, scenarioNum)
     ax1 = axes('Position',[left_margin, bottom_margin + plot_height + plot_spacing, right_margin-left_margin, plot_height], ...
                'Color', th.axes_bg, 'XColor', th.text_col, 'YColor', th.text_col, ...
                'GridColor', th.axes_grid, 'GridAlpha',0.3, 'XScale', 'log');
+    set(ax1, 'XTickLabel', []);
     hold(ax1,'on'); grid(ax1,'on');
-    plot(ax1, faxis, 20*log10(abs(resp)), 'Color', th.lineColors(1,:), 'LineWidth', 1.5);
-    xlabel(ax1,'Frequency (Hz)','Color',th.text_col);
+    plot(ax1, faxis, 20*log10(abs(resp)), 'Color', th.lineColors(1,:), 'LineWidth', 1);
+    % xlabel(ax1,'Frequency (Hz)','Color',th.text_col);
     ylabel(ax1,'Magnitude (dB)','Color',th.text_col);
     xlim(ax1, [0.005, 1]);
     ylim(ax1, [-50, 50]);
@@ -48,7 +49,7 @@ function plotBenchmarkBode(KPI, th, reportFolder, reportPDF, scenarioNum)
         ph_shifted = ph - 180 * n;
     end
 
-    plot(ax2, faxis, ph_shifted, 'Color', th.lineColors(2,:), 'LineWidth', 1.5);
+    plot(ax2, faxis, ph_shifted, 'Color', th.lineColors(2,:), 'LineWidth', 1);
     xlabel(ax2,'Frequency (Hz)','Color',th.text_col);
     ylabel(ax2,'Phase (deg)','Color',th.text_col);
     xlim(ax2, [0.005, 1]);
