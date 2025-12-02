@@ -4,21 +4,18 @@ classdef KPI
         function rmse = RMSE(signal, reference)
             e = reference(:) - signal(:);
             rmse = sqrt(mean(e.^2));
-            rmse = 14.503*rmse; % bar -> psi
         end
         
         function err = Trapped(signal, reference, tsim, t)
             dtSim = mean(diff(tsim));
             e = reference(:) - signal(:);
             err = max(e(round(t/dtSim)), 0);
-            err = 14.503*err; % bar -> psi
         end
         
         function maxErr = MaxSignedError(signal, reference)
             e = reference(:) - signal(:);
             [~, idx] = max(abs(e));
-            maxErr = e(idx);  
-            maxErr = 14.503*maxErr; % bar -> psi
+            maxErr = e(idx);
         end
         
         function rise_t = RiseTime(signal, t, t_start, step_value, threshold)
@@ -68,7 +65,6 @@ classdef KPI
             else
                 os = max(target_value - seg);
             end
-            os = 14.503*os; % bar -> psi
         end
         
         %% Integral error KPIs
@@ -115,7 +111,7 @@ classdef KPI
         end
 
         %% Stability Margin KPI
-        function [GMdB, PM, wcg, wcp, resp, faxis] = StabilityMargins(signal, reference, t, t_start, t_end)
+        function [GMdB, PM, wcg, wcp, TDM, S_max, resp, faxis] = StabilityMargins(signal, reference, t, t_start, t_end)
             idx = t >= t_start & t <= t_end;
             u = signal(idx) - reference(idx);
             y = signal(idx);
@@ -124,25 +120,65 @@ classdef KPI
             dtSim = mean(diff(t_segment));
             N = numel(t_segment);
         
+            % Frequency axis in Hz
             faxis = (0:(N-1)) / N / dtSim;
             half = floor(N/2);
             faxis = faxis(1:half);
         
             u = detrend(u);
             y = detrend(y);
-        
             u = u(:)';
             y = y(:)';
         
             resp = calculate_response(u, y, N);
-            resp = resp .* exp(-1i * pi);
-            [GM, PM, wcg, wcp] = plot_bode_with_stability_margins(resp, faxis, 0.01, 1, 0);
+            resp = resp .* exp(-1i * pi); 
+            
+            % Frequency range
+            f_min = 0.01;
+            f_max = 1;
+            idx_range = (faxis >= f_min) & (faxis <= f_max);
+            
+            % GM, PM
+            [GM, PM, wcg, wcp] = plot_bode_with_stability_margins(resp, faxis, f_min, f_max, 0);
         
-            % Convert to Hz
-            wcg = wcg / (2*pi);
-            wcp = wcp / (2*pi);
-       
-            GMdB = 20*log10(GM); % in dB
+            % Peak Sensitivity (S_max)
+            if ~any(idx_range)
+                S_max = NaN;
+            else
+                resp_in_range = resp(idx_range);
+                return_diff = 1 + resp_in_range;
+                
+                min_dist_critical = min(abs(return_diff));
+                
+                if min_dist_critical == 0
+                    S_max = Inf;
+                else
+                    S_max = 1 / min_dist_critical;
+                end
+            end
+        
+            % Robust Time Delay Margin (TDM)
+            mag_L = abs(resp);
+            valid_indices = find((mag_L >= 1) & idx_range); 
+            
+            if isempty(valid_indices)
+                TDM = Inf;
+            else
+                f_valid = faxis(valid_indices);
+                phi_valid = angle(resp(valid_indices)) * (180/pi);
+                pm_valid = 180 + phi_valid;
+                delay_candidates = (pm_valid .* (pi/180)) ./ (2 * pi * f_valid);
+                delay_candidates(delay_candidates < 0) = Inf;
+                
+                TDM = min(delay_candidates);
+                if isempty(TDM)
+                     TDM = 0;
+                end
+            end
+        
+            wcg = wcg / (2*pi); % Hz
+            wcp = wcp / (2*pi); % Hz
+            GMdB = 20*log10(GM); % dB
         end
     end
 end

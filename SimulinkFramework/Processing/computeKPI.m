@@ -50,10 +50,15 @@ function KPI_results = computeKPI(simOut, scenario, OP)
         case 6
             t_start = 100;
             t_end   = 1100;
-            [KPI_results.GM, KPI_results.PM, KPI_results.wcg, KPI_results.wcp, KPI_results.resp, KPI_results.faxis] = KPI.StabilityMargins(simOut.p_c.Data(:), simOut.p_c_r.Data(:), simOut.tout, t_start, t_end);
+            [KPI_results.GM, KPI_results.PM, KPI_results.wcg, KPI_results.wcp, ...
+             KPI_results.TDM, KPI_results.S_max, ...
+             KPI_results.resp, KPI_results.faxis] = KPI.StabilityMargins(simOut.p_c.Data(:), simOut.p_c_r.Data(:), simOut.tout, t_start, t_end);
+             
         case 7
             t_start = 500 + waitTime + 2*OP.t_ramp;
-            t_end   = 1500  + waitTime + 2*OP.t_ramp;
-            [KPI_results.GM, KPI_results.PM, KPI_results.wcg, KPI_results.wcp, KPI_results.resp, KPI_results.faxis] = KPI.StabilityMargins(simOut.p_c.Data(:), simOut.p_c_r.Data(:), simOut.tout, t_start, t_end);
+            t_end   = 1500 + waitTime + 2*OP.t_ramp;
+            [KPI_results.GM, KPI_results.PM, KPI_results.wcg, KPI_results.wcp, ...
+             KPI_results.TDM, KPI_results.S_max, ...
+             KPI_results.resp, KPI_results.faxis] = KPI.StabilityMargins(simOut.p_c.Data(:), simOut.p_c_r.Data(:), simOut.tout, t_start, t_end);
     end
 end
