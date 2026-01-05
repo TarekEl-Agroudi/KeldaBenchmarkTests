@@ -5,7 +5,7 @@
 **Contact:** tareke@stud.ntnu.no / tarek@kelda.no
 
 ## 1. Overview
-This benchmark suite provides a standardized simulation environment for testing Choke Pressure Control algorithms in Managed Pressure Drilling (MPD). It utilizes high-fidelity FMU (Functional Mock-up Unit) models to simulate realistic wellbore physics, including acoustic waves and nonlinear choke characteristics.
+This benchmark suite provides a standardized simulation environment for testing Choke Pressure Control algorithms in Managed Pressure Drilling (MPD). It utilizes high-fidelity FMU (Functional Mock-up Unit) models to simulate realistic wellbore physics, including acoustic waves and nonlinear choke characteristics. The plant model runs at 100 Hz and the controller runs at 20 Hz.
 
 The suite includes **7 standardized test scenarios** covering routine operations and stability verification.
 
@@ -52,9 +52,17 @@ Ensure your folder structure looks exactly like this. The script relies on relat
 ### Step 1: Prepare Your Controller
 Create a Simulink model (`.slx`) containing your control logic and save it inside the `controllers` folder.
 
-> **Recommendation:** Use the provided `ExternalController.slx` as a starting point or template to ensure correct port interfaces.
->
-> **Note:** Your controller must be compatible with Model Reference settings (i.e., it should not have conflicting solver settings).
+> **Important:** Your controller model must be configured to emulate realistic industrial hardware limits.
+
+**System Requirements:**
+* **Sample Time:** Your controller must run at **20 Hz (0.05s)**.
+* **Solver Configuration:** Set your model settings to:
+    * **Type:** `Fixed-step`
+    * **Solver:** `discrete (no continuous states)`
+    * **Fixed-step size:** `0.05`
+* **Discrete Only:** Do not use continuous blocks. Use their discrete equivalents to avoid hybrid model errors.
+
+> **Recommendation:** Use the provided `ExternalController.slx` as a starting point. It is pre-configured with the correct ports and solver settings.
 
 ### Step 2: Start the Script
 Open MATLAB, navigate to the root folder, and type:
@@ -101,3 +109,10 @@ After execution, results are saved in the `reports` folder:
 
 **ISSUE: FMU / Simulation Crash**
 * **Solution:** Ensure you are using MATLAB R2020b or newer. If you are on an older version, FMU Import is not natively supported without the "Simulink Compiler" or "FMI Kit" add-ons.
+
+**ISSUE: "Referencing a hybrid model with a different fixed step size is not supported"**
+* **Cause:** Your controller model contains continuous states or has a block with `SampleTime = 0`. Simulink cannot solve continuous physics inside a discrete 20 Hz controller referenced by a 100 Hz harness.
+* **Solution:**
+    1. Open your controller model settings (`Ctrl+E`) and set the **Solver** to `discrete (no continuous states)`.
+    2. Replace all continuous blocks with their discrete equivalents (e.g., `Discrete Time Integrator`).
+    3. Ensure sources like **Step** or **Constant** blocks have a Sample Time of `0.05` or `-1` (Inherited).
